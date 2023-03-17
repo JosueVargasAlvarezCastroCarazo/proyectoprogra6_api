@@ -5,12 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using proyectoprogra6_api.Attributes;
 using proyectoprogra6_api.Models;
+using proyectoprogra6_api.ModelsDTOs;
+using proyectoprogra6_api.Tools;
 
 namespace proyectoprogra6_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiKey]
     public class UsersController : ControllerBase
     {
         private readonly proyectoprogra6Context _context;
@@ -75,9 +79,12 @@ namespace proyectoprogra6_api.Controllers
         // POST: api/Users
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> PostUser(UserDTO user)
         {
-            _context.Users.Add(user);
+            String EncriptedPassword = new Crypto().EncriptarEnUnSentido(user.LoginPassword);
+            user.LoginPassword = EncriptedPassword;
+
+            _context.Users.Add(user.getNativeModel());
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetUser", new { id = user.UserId }, user);
@@ -103,5 +110,37 @@ namespace proyectoprogra6_api.Controllers
         {
             return _context.Users.Any(e => e.UserId == id);
         }
+
+
+
+
+
+        // my methods 
+
+        [HttpGet("LoginUser")]
+        //this use query string
+        public async Task<ActionResult<UserDTO>> LoginUser(string identification, string password)
+        {
+
+            String EncriptedPassword = new Crypto().EncriptarEnUnSentido(password);
+
+            User? user = await _context.Users.SingleOrDefaultAsync(e => e.Identification == identification && e.LoginPassword == EncriptedPassword);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return new UserDTO(user);
+        }
+
+
+
+
+
+
+
+
     }
+
 }

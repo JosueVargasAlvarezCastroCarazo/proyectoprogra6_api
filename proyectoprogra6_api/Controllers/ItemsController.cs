@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using proyectoprogra6_api.Attributes;
 using proyectoprogra6_api.Models;
 
 namespace proyectoprogra6_api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiKey]
     public class ItemsController : ControllerBase
     {
         private readonly proyectoprogra6Context _context;
