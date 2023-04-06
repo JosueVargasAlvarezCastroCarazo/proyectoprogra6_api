@@ -89,6 +89,10 @@ namespace proyectoprogra6_api.Models
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Email)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Identification)
                     .HasMaxLength(255)
                     .IsUnicode(false);

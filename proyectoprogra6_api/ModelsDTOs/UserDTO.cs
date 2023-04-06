@@ -10,6 +10,19 @@ namespace proyectoprogra6_api.ModelsDTOs
             
         }
 
+        public UserDTO(int userId, string name, string phoneNumber, string address, string loginPassword, bool? isAdmin, string identification, bool? active, string? email)
+        {
+            UserId = userId;
+            Name = name;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            LoginPassword = loginPassword;
+            IsAdmin = isAdmin;
+            Identification = identification;
+            Active = active;
+            Email = email;
+        }
+
         public UserDTO(User user)
         {
             UserId = user.UserId;
@@ -20,6 +33,7 @@ namespace proyectoprogra6_api.ModelsDTOs
             IsAdmin = user.IsAdmin;
             Identification = user.Identification;
             Active = user.Active;
+            Email = user.Email;
         }
 
         public User getNativeModel()
@@ -33,6 +47,7 @@ namespace proyectoprogra6_api.ModelsDTOs
             model.IsAdmin = IsAdmin;
             model.Identification = Identification;
             model.Active = Active;
+            model.Email = Email;
             return model;
         }
 
@@ -44,6 +59,7 @@ namespace proyectoprogra6_api.ModelsDTOs
         public bool? IsAdmin { get; set; }
         public string Identification { get; set; } = null!;
         public bool? Active { get; set; }
+        public string? Email { get; set; }
 
     }
 }

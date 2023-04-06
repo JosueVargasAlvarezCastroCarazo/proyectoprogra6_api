@@ -1,4 +1,5 @@
-﻿using proyectoprogra6_api.Models;
+﻿using Microsoft.EntityFrameworkCore.Query.Internal;
+using proyectoprogra6_api.Models;
 
 namespace proyectoprogra6_api.ModelsDTOs
 {
@@ -12,6 +13,15 @@ namespace proyectoprogra6_api.ModelsDTOs
             ItemDescription = item.ItemDescription;
             Code = item.Code;
             Active = item.Active;
+        }
+
+        public ItemDTO(int itemId, string itemName, string itemDescription, string code, bool? active)
+        {
+            ItemId = itemId;
+            ItemName = itemName;
+            ItemDescription = itemDescription;
+            Code = code;
+            Active = active;
         }
 
         public ItemDTO()

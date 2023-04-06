@@ -24,16 +24,56 @@ namespace proyectoprogra6_api.Controllers
             _context = context;
         }
 
+
+        [HttpGet("Search")]
+        public  ActionResult<IEnumerable<UserDTO>> GetUsersSearch(bool active, string search)
+        {
+
+            var query = (
+                  from u in _context.Users
+                  where u.Active == active && (u.Name.Contains(search) || u.Identification.Contains(search) || u.Email.Contains(search))
+                  select new UserDTO(
+                      u.UserId,
+                      u.Name,
+                      u.PhoneNumber,
+                      u.Address,
+                      u.LoginPassword,
+                      u.IsAdmin,
+                      u.Identification,
+                      u.Active,
+                      u.Email)
+                  ).ToList();
+
+            return query;
+        }
+
+
         // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public  ActionResult<IEnumerable<UserDTO>> GetUsers(bool active)
         {
-            return await _context.Users.ToListAsync();
+
+            var query = (
+                  from u in _context.Users
+                  where u.Active == active
+                  select new UserDTO(
+                      u.UserId,
+                      u.Name,
+                      u.PhoneNumber,
+                      u.Address,
+                      u.LoginPassword,
+                      u.IsAdmin,
+                      u.Identification,
+                      u.Active,
+                      u.Email)
+                  ).ToList();
+
+            return query;
         }
 
         // GET: api/Users/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -42,20 +82,53 @@ namespace proyectoprogra6_api.Controllers
                 return NotFound();
             }
 
-            return user;
+            return new UserDTO(user);
         }
 
         // PUT: api/Users/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        public async Task<IActionResult> PutUser(int id, UserDTO user)
         {
             if (id != user.UserId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(user).State = EntityState.Modified;
+            _context.Entry(user.getNativeModel()).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("password/{id}")]
+        public async Task<IActionResult> PutUserChangePassword(int id, UserDTO user)
+        {
+            
+            String EncriptedPassword = new Crypto().EncriptarEnUnSentido(user.LoginPassword);
+            user.LoginPassword = EncriptedPassword;
+
+            if (id != user.UserId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(user.getNativeModel()).State = EntityState.Modified;
 
             try
             {
@@ -133,6 +206,22 @@ namespace proyectoprogra6_api.Controllers
 
             return new UserDTO(user);
         }
+
+        [HttpGet("CheckIdentification")]
+        //this use query string
+        public async Task<ActionResult<UserDTO>> CheckIdentification(string identification)
+        {
+
+            User? user = await _context.Users.SingleOrDefaultAsync(e => e.Identification == identification);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return new UserDTO(user);
+        }
+
 
 
 

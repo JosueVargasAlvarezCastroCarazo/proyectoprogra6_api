@@ -18,6 +18,7 @@ namespace proyectoprogra6_api.Models
         public bool? IsAdmin { get; set; }
         public string Identification { get; set; } = null!;
         public bool? Active { get; set; }
+        public string? Email { get; set; }
 
         public virtual ICollection<Reservation> Reservations { get; set; }
     }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectoprogra6_api.Attributes;
 using proyectoprogra6_api.Models;
+using proyectoprogra6_api.ModelsDTOs;
 
 namespace proyectoprogra6_api.Controllers
 {
@@ -23,15 +24,43 @@ namespace proyectoprogra6_api.Controllers
         }
 
         // GET: api/Items
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems()
+        [HttpGet("Search")]
+        public ActionResult<IEnumerable<ItemDTO>> GetItemsSearch(bool active,string search)
         {
-            return await _context.Items.ToListAsync();
+            var query = (
+                    from u in _context.Items
+                    where u.Active == active && (u.ItemName.Contains(search) || u.ItemDescription.Contains(search) || u.Code.Contains(search))
+                    select new ItemDTO(
+                        u.ItemId,
+                        u.ItemName,
+                        u.ItemDescription,
+                        u.Code,
+                        u.Active)
+                    ).ToList();
+
+            return query;
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<ItemDTO>> GetItems(bool active)
+        {
+            var query = (
+                   from u in _context.Items
+                   where u.Active == active
+                   select new ItemDTO(
+                       u.ItemId,
+                       u.ItemName,
+                       u.ItemDescription,
+                       u.Code,
+                       u.Active)
+                   ).ToList();
+
+            return query;
         }
 
         // GET: api/Items/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Item>> GetItem(int id)
+        public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
             var item = await _context.Items.FindAsync(id);
 
@@ -40,20 +69,20 @@ namespace proyectoprogra6_api.Controllers
                 return NotFound();
             }
 
-            return item;
+            return new ItemDTO(item);
         }
 
         // PUT: api/Items/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItem(int id, Item item)
+        public async Task<IActionResult> PutItem(int id, ItemDTO item)
         {
             if (id != item.ItemId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(item).State = EntityState.Modified;
+            _context.Entry(item.getNativeModel()).State = EntityState.Modified;
 
             try
             {
@@ -77,9 +106,9 @@ namespace proyectoprogra6_api.Controllers
         // POST: api/Items
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Item>> PostItem(Item item)
+        public async Task<ActionResult<Item>> PostItem(ItemDTO item)
         {
-            _context.Items.Add(item);
+            _context.Items.Add(item.getNativeModel());
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetItem", new { id = item.ItemId }, item);
