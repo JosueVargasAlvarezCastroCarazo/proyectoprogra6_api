@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyectoprogra6_api.Attributes;
 using proyectoprogra6_api.Models;
+using proyectoprogra6_api.ModelsDTOs;
 
 namespace proyectoprogra6_api.Controllers
 {
@@ -27,6 +28,50 @@ namespace proyectoprogra6_api.Controllers
         public async Task<ActionResult<IEnumerable<Reservation>>> GetReservations()
         {
             return await _context.Reservations.ToListAsync();
+        }
+
+
+
+        [HttpGet("Search")]
+        public ActionResult<IEnumerable<ReservationDTO>> GetReservationsDates(int UserId, DateTime Start, DateTime End)
+        {
+            var query = new List<ReservationDTO>();
+
+            if (UserId == 0)
+            {
+                query = (
+                        from u in _context.Reservations
+                        join i in _context.Items on u.ItemId equals i.ItemId
+                        where u.StartDate >= Start && u.EndDate >= End
+                        select new ReservationDTO(
+                            u.ReservationId,
+                            u.Notes,
+                            u.StartDate,
+                            u.EndDate,
+                            u.UserId,
+                            u.ItemId,
+                            i.ItemName
+                            )
+                        ).ToList();
+            }
+            else
+            {
+                query = (
+                        from u in _context.Reservations
+                        join i in _context.Items on u.ItemId equals i.ItemId
+                        where u.StartDate >= Start && u.EndDate >= End && u.UserId == UserId
+                        select new ReservationDTO(
+                            u.ReservationId,
+                            u.Notes,
+                            u.StartDate,
+                            u.EndDate,
+                            u.UserId,
+                            u.ItemId,
+                            i.ItemName
+                            )
+                        ).ToList();
+            }
+            return query;
         }
 
         // GET: api/Reservations/5
@@ -77,12 +122,37 @@ namespace proyectoprogra6_api.Controllers
         // POST: api/Reservations
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Reservation>> PostReservation(Reservation reservation)
+        public async Task<ActionResult<Reservation>> PostReservation(ReservationDTO reservation)
         {
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReservation", new { id = reservation.ReservationId }, reservation);
+
+            var query = (
+                    from u in _context.Reservations
+                    where u.ItemId == reservation.ItemId && ( (reservation.StartDate >= u.StartDate && reservation.StartDate <= u.EndDate) || (reservation.EndDate <= u.EndDate && reservation.EndDate >= u.StartDate))
+                    select new ReservationDTO(
+                        u.ReservationId,
+                        u.Notes,
+                        u.StartDate,
+                        u.EndDate,
+                        u.UserId,
+                        u.ItemId
+                        )
+                    ).ToList();
+
+
+            if (query.Count > 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                _context.Reservations.Add(reservation.getNativeModel());
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetReservation", new { id = reservation.ReservationId }, reservation);
+            }
+
+            
         }
 
         // DELETE: api/Reservations/5

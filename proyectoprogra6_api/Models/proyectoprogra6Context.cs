@@ -56,13 +56,13 @@ namespace proyectoprogra6_api.Models
             {
                 entity.ToTable("Reservation");
 
-                entity.Property(e => e.EndDate).HasColumnType("date");
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Notes)
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
-                entity.Property(e => e.StartDate).HasColumnType("date");
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Item)
                     .WithMany(p => p.Reservations)

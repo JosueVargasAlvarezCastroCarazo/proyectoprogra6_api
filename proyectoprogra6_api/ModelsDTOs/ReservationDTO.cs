@@ -12,6 +12,27 @@ namespace proyectoprogra6_api.ModelsDTOs
             
         }
 
+        public ReservationDTO(int reservationId, string notes, DateTime startDate, DateTime endDate, int userId, int itemId)
+        {
+            ReservationId = reservationId;
+            Notes = notes;
+            StartDate = startDate;
+            EndDate = endDate;
+            UserId = userId;
+            ItemId = itemId;
+        }
+
+        public ReservationDTO(int reservationId, string notes, DateTime startDate, DateTime endDate, int userId, int itemId,string itemName)
+        {
+            ReservationId = reservationId;
+            Notes = notes;
+            StartDate = startDate;
+            EndDate = endDate;
+            UserId = userId;
+            ItemId = itemId;
+            ItemName = itemName;
+        }
+
         public ReservationDTO(Reservation reservation)
         {
             ReservationId = reservation.ReservationId;
@@ -40,6 +61,7 @@ namespace proyectoprogra6_api.ModelsDTOs
         public DateTime EndDate { get; set; }
         public int UserId { get; set; }
         public int ItemId { get; set; }
+        public string? ItemName { get; set; }
 
     }
 
