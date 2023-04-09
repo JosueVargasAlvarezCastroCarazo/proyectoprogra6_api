@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -33,16 +34,22 @@ namespace proyectoprogra6_api.Controllers
 
 
         [HttpGet("Search")]
-        public ActionResult<IEnumerable<ReservationDTO>> GetReservationsDates(int UserId, DateTime Start, DateTime End)
+        public ActionResult<IEnumerable<ReservationDTO>> GetReservationsDates(int UserId, string Start, string End)
         {
+
+            DateTime StartDate = DateTime.ParseExact(Start, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            DateTime EndDate = DateTime.ParseExact(End, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+
             var query = new List<ReservationDTO>();
 
+            
             if (UserId == 0)
             {
                 query = (
                         from u in _context.Reservations
+                        orderby u.StartDate descending
                         join i in _context.Items on u.ItemId equals i.ItemId
-                        where u.StartDate >= Start && u.EndDate >= End
+                        where u.StartDate >= StartDate && u.EndDate <= EndDate
                         select new ReservationDTO(
                             u.ReservationId,
                             u.Notes,
@@ -58,8 +65,9 @@ namespace proyectoprogra6_api.Controllers
             {
                 query = (
                         from u in _context.Reservations
+                        orderby u.StartDate descending
                         join i in _context.Items on u.ItemId equals i.ItemId
-                        where u.StartDate >= Start && u.EndDate >= End && u.UserId == UserId
+                        where u.StartDate >= StartDate && u.EndDate <= EndDate && u.UserId == UserId
                         select new ReservationDTO(
                             u.ReservationId,
                             u.Notes,
@@ -71,6 +79,31 @@ namespace proyectoprogra6_api.Controllers
                             )
                         ).ToList();
             }
+            return query;
+        }
+
+        [HttpGet("SearchByItemId")]
+        public ActionResult<IEnumerable<ReservationDTO>> SearchByItemId(int ItemId)
+        {
+
+            var query = new List<ReservationDTO>();
+
+            query = (
+                    from u in _context.Reservations
+                    orderby u.StartDate descending
+                    join i in _context.Items on u.ItemId equals i.ItemId
+                    where i.ItemId == ItemId
+                    select new ReservationDTO(
+                        u.ReservationId,
+                        u.Notes,
+                        u.StartDate,
+                        u.EndDate,
+                        u.UserId,
+                        u.ItemId,
+                        i.ItemName
+                        )
+                    ).ToList();
+           
             return query;
         }
 
@@ -91,32 +124,56 @@ namespace proyectoprogra6_api.Controllers
         // PUT: api/Reservations/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReservation(int id, Reservation reservation)
+        public async Task<IActionResult> PutReservation(int id, ReservationDTO reservation)
         {
-            if (id != reservation.ReservationId)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(reservation).State = EntityState.Modified;
 
-            try
+            var query = (
+                   from u in _context.Reservations
+                   where u.ItemId == reservation.ItemId && ((reservation.StartDate >= u.StartDate && reservation.StartDate <= u.EndDate) || (reservation.EndDate <= u.EndDate && reservation.EndDate >= u.StartDate))
+                   select new ReservationDTO(
+                       u.ReservationId,
+                       u.Notes,
+                       u.StartDate,
+                       u.EndDate,
+                       u.UserId,
+                       u.ItemId
+                       )
+                   ).ToList();
+
+
+            if (query.Count > 0 && query.First().ReservationId != id)
             {
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!ReservationExists(id))
+
+                if (id != reservation.ReservationId)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return NoContent();
+                _context.Entry(reservation.getNativeModel()).State = EntityState.Modified;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ReservationExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return NoContent();
+            }
         }
 
         // POST: api/Reservations
