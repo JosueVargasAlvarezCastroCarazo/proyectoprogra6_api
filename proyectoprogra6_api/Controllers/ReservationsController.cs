@@ -32,7 +32,7 @@ namespace proyectoprogra6_api.Controllers
         }
 
 
-
+        //busca reservas segun fechas y un id de un usuario
         [HttpGet("Search")]
         public ActionResult<IEnumerable<ReservationDTO>> GetReservationsDates(int UserId, string Start, string End)
         {
@@ -82,6 +82,7 @@ namespace proyectoprogra6_api.Controllers
             return query;
         }
 
+        //busca reservas segun un item de una reserva
         [HttpGet("SearchByItemId")]
         public ActionResult<IEnumerable<ReservationDTO>> SearchByItemId(int ItemId)
         {
@@ -107,7 +108,7 @@ namespace proyectoprogra6_api.Controllers
             return query;
         }
 
-        // GET: api/Reservations/5
+        // GET: api/Reservations/5 obtiene una reserva segun un id
         [HttpGet("{id}")]
         public async Task<ActionResult<Reservation>> GetReservation(int id)
         {
@@ -121,7 +122,7 @@ namespace proyectoprogra6_api.Controllers
             return reservation;
         }
 
-        // PUT: api/Reservations/5
+        // PUT: api/Reservations/5 actualiza una reserva
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReservation(int id, ReservationDTO reservation)
@@ -176,7 +177,7 @@ namespace proyectoprogra6_api.Controllers
             }
         }
 
-        // POST: api/Reservations
+        // POST: api/Reservations crea una nueva reserva
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Reservation>> PostReservation(ReservationDTO reservation)
@@ -212,7 +213,8 @@ namespace proyectoprogra6_api.Controllers
             
         }
 
-        // DELETE: api/Reservations/5
+        // DELETE: api/Reservations/5 elimina una reserva
+        //en este caso si se elimina de verdad
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReservation(int id)
         {

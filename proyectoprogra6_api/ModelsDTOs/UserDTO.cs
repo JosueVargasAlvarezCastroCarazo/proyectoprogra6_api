@@ -36,6 +36,7 @@ namespace proyectoprogra6_api.ModelsDTOs
             Email = user.Email;
         }
 
+        //return the original model
         public User getNativeModel()
         {
             User model = new User();

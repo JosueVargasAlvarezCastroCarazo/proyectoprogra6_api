@@ -25,6 +25,7 @@ namespace proyectoprogra6_api.Controllers
         }
 
 
+        //filtra la lista de usuarios
         [HttpGet("Search")]
         public  ActionResult<IEnumerable<UserDTO>> GetUsersSearch(bool active, string search)
         {
@@ -85,7 +86,7 @@ namespace proyectoprogra6_api.Controllers
             return new UserDTO(user);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Users/5 actualiza un usuario, este metodo no cambia la contra
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, UserDTO user)
@@ -116,6 +117,7 @@ namespace proyectoprogra6_api.Controllers
             return NoContent();
         }
 
+        //actualiza un usaurio, ademas encripta la contraseña porque fue que se cambio
         [HttpPut("password/{id}")]
         public async Task<IActionResult> PutUserChangePassword(int id, UserDTO user)
         {
@@ -149,7 +151,7 @@ namespace proyectoprogra6_api.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
+        // POST: api/Users crea un usuario y encripta la contra
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(UserDTO user)
@@ -163,7 +165,7 @@ namespace proyectoprogra6_api.Controllers
             return CreatedAtAction("GetUser", new { id = user.UserId }, user);
         }
 
-        // DELETE: api/Users/5
+        // DELETE: api/Users/5 elimina un usuario
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -190,6 +192,7 @@ namespace proyectoprogra6_api.Controllers
 
         // my methods 
 
+        //devuelve un usurio segun identificacion y contra
         [HttpGet("LoginUser")]
         //this use query string
         public async Task<ActionResult<UserDTO>> LoginUser(string identification, string password)
@@ -208,6 +211,7 @@ namespace proyectoprogra6_api.Controllers
         }
 
         [HttpGet("CheckIdentification")]
+        //devuelve un usuario segun una identificacion
         //this use query string
         public async Task<ActionResult<UserDTO>> CheckIdentification(string identification)
         {

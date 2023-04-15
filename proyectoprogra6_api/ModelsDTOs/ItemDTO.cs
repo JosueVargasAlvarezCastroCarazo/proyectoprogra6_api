@@ -29,6 +29,7 @@ namespace proyectoprogra6_api.ModelsDTOs
             
         }
 
+        //return the original model
         public Item getNativeModel()
         {
             Item model = new Item();

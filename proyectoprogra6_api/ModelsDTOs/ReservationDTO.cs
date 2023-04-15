@@ -43,6 +43,7 @@ namespace proyectoprogra6_api.ModelsDTOs
             ItemId = reservation.ItemId;
         }
 
+        //return the original model
         public Reservation getNativeModel()
         {
             Reservation model = new Reservation();

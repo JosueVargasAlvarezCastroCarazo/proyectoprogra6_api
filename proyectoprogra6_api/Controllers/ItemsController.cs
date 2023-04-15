@@ -23,7 +23,7 @@ namespace proyectoprogra6_api.Controllers
             _context = context;
         }
 
-        // GET: api/Items
+        // GET: api/Items get items with search
         [HttpGet("Search")]
         public ActionResult<IEnumerable<ItemDTO>> GetItemsSearch(bool active,string search)
         {
@@ -41,6 +41,7 @@ namespace proyectoprogra6_api.Controllers
             return query;
         }
 
+        //get active items
         [HttpGet]
         public ActionResult<IEnumerable<ItemDTO>> GetItems(bool active)
         {
@@ -58,7 +59,7 @@ namespace proyectoprogra6_api.Controllers
             return query;
         }
 
-        // GET: api/Items/5
+        // GET: api/Items/5 get item with one id
         [HttpGet("{id}")]
         public async Task<ActionResult<ItemDTO>> GetItem(int id)
         {
@@ -72,7 +73,7 @@ namespace proyectoprogra6_api.Controllers
             return new ItemDTO(item);
         }
 
-        // PUT: api/Items/5
+        // PUT: api/Items/5 update one item
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutItem(int id, ItemDTO item)
@@ -103,7 +104,7 @@ namespace proyectoprogra6_api.Controllers
             return NoContent();
         }
 
-        // POST: api/Items
+        // POST: api/Items create a new item
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Item>> PostItem(ItemDTO item)
