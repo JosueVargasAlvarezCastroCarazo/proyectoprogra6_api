@@ -31,6 +31,26 @@ namespace proyectoprogra6_api.Controllers
             return await _context.Reservations.ToListAsync();
         }
 
+        //Top articulos
+        [HttpGet("TopItems")]
+        public ActionResult<IEnumerable<ReservationCount>> TopItemsReservations()
+        {
+
+            List<ReservationCount> list = new List<ReservationCount>();
+
+
+            var query = (
+                   from u in _context.Items
+                   select new ReservationCount(
+                         u.ItemName,
+                        (from x in _context.Reservations
+                         where x.ItemId == u.ItemId
+                         select x.ItemId).ToList().Count
+                            )
+                   ).ToList().OrderByDescending(x => x.Count).ToList(); ;
+
+            return query;
+        }
 
         //busca reservas segun fechas y un id de un usuario
         [HttpGet("Search")]
