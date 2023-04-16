@@ -16,7 +16,9 @@ namespace proyectoprogra6_api.Models
         {
         }
 
+        public virtual DbSet<HelpRequest> HelpRequests { get; set; } = null!;
         public virtual DbSet<Item> Items { get; set; } = null!;
+        public virtual DbSet<RecoveryCode> RecoveryCodes { get; set; } = null!;
         public virtual DbSet<Reservation> Reservations { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -31,6 +33,15 @@ namespace proyectoprogra6_api.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<HelpRequest>(entity =>
+            {
+                entity.ToTable("HelpRequest");
+
+                entity.Property(e => e.Email).HasMaxLength(50);
+
+                entity.Property(e => e.Message).HasMaxLength(255);
+            });
+
             modelBuilder.Entity<Item>(entity =>
             {
                 entity.ToTable("Item");
@@ -50,6 +61,17 @@ namespace proyectoprogra6_api.Models
                 entity.Property(e => e.ItemName)
                     .HasMaxLength(255)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<RecoveryCode>(entity =>
+            {
+                entity.ToTable("RecoveryCode");
+
+                entity.Property(e => e.Code).HasMaxLength(50);
+
+                entity.Property(e => e.CreationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Email).HasMaxLength(50);
             });
 
             modelBuilder.Entity<Reservation>(entity =>

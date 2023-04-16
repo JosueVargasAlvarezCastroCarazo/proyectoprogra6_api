@@ -229,9 +229,49 @@ namespace proyectoprogra6_api.Controllers
 
 
 
+        // POST: api/Users crea un usuario y encripta la contra
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost("SaveCode")]
+        public async Task<IActionResult> SaveCode(RecoveryCode Code)
+        {
+            _context.RecoveryCodes.Add(Code);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
 
+        [HttpPost("HelpResquest")]
+        public async Task<IActionResult> HelpResquest(HelpRequest Request)
+        {
+            _context.HelpRequests.Add(Request);
+            await _context.SaveChangesAsync();
 
+            return NoContent();
+        }
+
+        // GET: api/Users/GetHelpResquest
+        [HttpGet("GetHelpResquest")]
+        public async Task<ActionResult<IEnumerable<HelpRequest>>> GetHelpResquest()
+        {
+            return await _context.HelpRequests.ToListAsync();
+        }
+
+        // DELETE: api/HelpResquest/5
+        [HttpDelete("HelpResquest/{id}")]
+        public async Task<IActionResult> DeleteHelpResquest(int id)
+        {
+            var help = await _context.HelpRequests.FindAsync(id);
+            if (help == null)
+            {
+                return NotFound();
+            }
+
+            _context.HelpRequests.Remove(help);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
 
 
     }
