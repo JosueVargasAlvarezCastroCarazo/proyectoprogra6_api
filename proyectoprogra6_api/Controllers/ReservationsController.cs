@@ -47,7 +47,7 @@ namespace proyectoprogra6_api.Controllers
                          where x.ItemId == u.ItemId
                          select x.ItemId).ToList().Count
                             )
-                   ).ToList().OrderByDescending(x => x.Count).ToList(); ;
+                   ).ToList().OrderByDescending(x => x.Count).ToList();
 
             return query;
         }
